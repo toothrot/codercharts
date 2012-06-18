@@ -2,12 +2,13 @@
  * holy god this is ugly. and doesn't handle spaces properly for the problem.
 */
 #include<stdio.h>
+#include<ctype.h>
 #include<string.h>
 #include<stdlib.h>
 
 FILE *fp;
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   int line_number = 1;
   int pos = 0;
@@ -42,9 +43,10 @@ main(int argc, char *argv[])
           printf("%c", outchar);
           keypos++;
         } else {
-          if(isspace(line[pos]) && numspaces < 30){
+          if(isspace(line[pos]))
+          {
             numspaces++;
-            printf(line[pos]);
+            printf("%c", line[pos]);
           } else {
             outchar = line[pos] - key[keypos];
             if((int)outchar < 97)
@@ -69,7 +71,6 @@ main(int argc, char *argv[])
           }
         }
       }
-      printf("\n");
     } else {
       keysize = linesize - 1;
       for(pos = 0; pos < keysize; pos++)
