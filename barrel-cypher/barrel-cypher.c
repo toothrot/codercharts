@@ -1,6 +1,3 @@
-/*
- * holy god this is ugly. and doesn't handle spaces properly for the problem.
-*/
 #include<stdio.h>
 #include<ctype.h>
 #include<string.h>
@@ -17,7 +14,6 @@ int main(int argc, char *argv[])
   int keypos = 0;
   int ascdsc = 1;
   int numtests = 0;
-  int numspaces = 0;
   char line[5000];
   char outchar;
   int linesize = 0;
@@ -33,41 +29,29 @@ int main(int argc, char *argv[])
     {
       for(pos = 0; pos < linesize; pos++)
       {
-        if(pos == 0)
+        if(isspace(line[pos]))
         {
+          printf("%c", line[pos]);
+        } else {
           outchar = line[pos] - key[keypos];
           if((int)outchar < 97)
             outchar = outchar + 26;
           if((int)outchar > 126)
             outchar = outchar - 26;
           printf("%c", outchar);
-          keypos++;
-        } else {
-          if(isspace(line[pos]))
+          if(pos == 0 || ascdsc)
+            keypos++;
+          else
+            keypos--;
+          if(keypos == -1)
           {
-            numspaces++;
-            printf("%c", line[pos]);
-          } else {
-            outchar = line[pos] - key[keypos];
-            if((int)outchar < 97)
-              outchar = outchar + 26;
-            if((int)outchar > 126)
-              outchar = outchar - 26;
-            printf("%c", outchar);
-            if(ascdsc)
-              keypos++;
-            else
-              keypos--;
-            if(keypos == -1)
-            {
-              keypos++;
-              ascdsc = 1;
-            }
-            if(keypos == keysize)
-            {
-              keypos--;
-              ascdsc = 0;
-            }
+            keypos++;
+            ascdsc = 1;
+          }
+          if(keypos == keysize)
+          {
+            keypos--;
+            ascdsc = 0;
           }
         }
       }
