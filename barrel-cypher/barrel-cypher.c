@@ -18,13 +18,13 @@ int main(int argc, char *argv[])
   int ascdsc = 1;
   int numtests = 0;
   int numspaces = 0;
-  char line[1024];
+  char line[5000];
   char outchar;
   int linesize = 0;
   fp = fopen(argv[1], "rt");
 
   numtests = atoi(fgets(line, 1024, fp));
-  while(fgets(line, 1024, fp) != NULL)
+  while(fgets(line, 5000, fp) != NULL)
   {
     if(line_number > (2 * numtests))
       return 0;
