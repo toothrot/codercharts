@@ -2,69 +2,78 @@
 #include<ctype.h>
 #include<string.h>
 #include<stdlib.h>
-
-FILE *fp;
+#include<sys/mman.h>
+#include<sys/stat.h>
+#include<fcntl.h>
 
 int main(int argc, char *argv[])
 {
-  int line_number = 1;
-  int pos = 0;
-  int keysize = 0;
-  int key[5000];
-  int keypos = 0;
-  int ascdsc = 1;
-  int numtests = 0;
-  char line[5000];
-  char outchar;
-  int linesize = 0;
-  fp = fopen(argv[1], "rt");
+  int fp, size;
+  int ln = 1;
+  int i = 0;
+  int j;
+  int k[5000];
+  int ks = 0;
+  int ki = 0;
+  int ad = 1;
+  unsigned long num;
+  char out;
+  char c;
+  char *map, *end;
+  struct stat st;
+  stat(argv[1], &st);
+  size = st.st_size;
+  fp = open(argv[1], O_RDONLY);
 
-  numtests = atoi(fgets(line, 1024, fp));
-  while(fgets(line, 5000, fp) != NULL)
+  map = mmap(NULL, 9999999, PROT_READ, MAP_SHARED, fp, 0);
+  num = strtoul(map, &end, 0);
+  i = (end - map) + 1;
+  while(i < size)
   {
-    if(line_number > (2 * numtests))
-      return 0;
-    linesize = strlen(line);
-    if(line_number % 2 == 0)
+    c = map[i];
+    if(c == 10)
     {
-      for(pos = 0; pos < linesize; pos++)
+      if(ln % 2 == 0)
+        putchar(c);
+      ks = ki;
+      ln++; i++;
+      ki = 0;
+      ad = 1;
+      continue;
+    }
+    if(ln % 2 == 0)
+    {
+      if(c == 32)
       {
-        if(isspace(line[pos]))
+        putchar(c);
+      } else {
+        out = c - k[ki];
+        if((int)out < 97)
+          out += 26;
+        if((int)out > 126)
+          out -= 26;
+        putchar(out);
+        if(ad)
+          ki++;
+        else
+          ki--;
+        if(ki == -1)
         {
-          printf("%c", line[pos]);
-        } else {
-          outchar = line[pos] - key[keypos];
-          if((int)outchar < 97)
-            outchar = outchar + 26;
-          if((int)outchar > 126)
-            outchar = outchar - 26;
-          printf("%c", outchar);
-          if(pos == 0 || ascdsc)
-            keypos++;
-          else
-            keypos--;
-          if(keypos == -1)
-          {
-            keypos++;
-            ascdsc = 1;
-          }
-          if(keypos == keysize)
-          {
-            keypos--;
-            ascdsc = 0;
-          }
+          ki = 0;
+          ad = 1;
+        }
+        if(ki == ks)
+        {
+          ki--;
+          ad = 0;
         }
       }
     } else {
-      keysize = linesize - 1;
-      for(pos = 0; pos < keysize; pos++)
-      {
-        key[pos] = line[pos] - '0';
-      }
+      k[ki] = (c - '0');
+      ki++;
     }
-    keypos = 0;
-    ascdsc = 1;
-    line_number++;
+    i++;
   }
+  exit(0);
 }
 
