@@ -17,24 +17,19 @@ int main(int argc, char *argv[])
       i++;
       continue;
     }
-    if(map[i] == argv[1][0])
+    if(!found && map[i] == argv[1][0])
     {
       found = 1;
-      for(j = 0; argv[1][j] != 0; j++)
+      j = i;
+    } else if(found)
+    {
+      if(argv[1][i-j+1] != 0)
       {
-        if(map[i+j] != argv[1][j])
-        {
+        if(map[i] != argv[1][i-j])
           found = 0;
-          break;
-        }
-      } 
-      if(found && map[i+j] == 10)
-      {
-        printf("%i\n",nl);
-        break;
       } else {
-        i+=j;
-        continue;
+        printf("%i\n", nl);
+        break;
       }
     }
     i++;
