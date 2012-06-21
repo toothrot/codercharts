@@ -7,27 +7,29 @@
 
 int main(int argc, char *argv[])
 {
-  int size, fp, i, nl = 1;
+  int size, fp, i, length, found = 0, nl = 1;
   char *map, c;
-  char *match = 0;
   struct stat st;
 
+  length = strlen(argv[1]);
   stat(argv[2], &st);
   size = st.st_size;
   fp = open(argv[2], O_RDONLY);
 
   map = mmap(NULL, size, PROT_READ, MAP_SHARED, fp, 0);
-  match = strstr(map, argv[1]);
-  if(match)
+  for(i = 0; i < size; i++)
   {
-    for(i = 0; i < match-map; i++)
+    c = map[i];
+    if(c == 10)
+      nl++;
+    found = strncmp(argv[1], map + i, length);
+    if(found == 0)
     {
-      if(map[i] == 10)
-        nl++;
+      printf("%i\n",nl);
+      break;
     }
-    printf("%i", nl);
-  } else {
-    printf("0");
   }
+  if(!(found == 0))
+    puts("0");
   exit(0);
 }
