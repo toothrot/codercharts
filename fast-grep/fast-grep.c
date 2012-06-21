@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
   unsigned i = 0;
-  int fp = 0, j = 0, found = 0, nl = 1;
+  int fp = 0, j = -1, nl = 1;
   char *map;
 
   fp = open(argv[2], 0);
@@ -14,28 +14,25 @@ int main(int argc, char *argv[])
     if(map[i] == 10)
     {
       nl++;
-      i++;
-      continue;
-    }
-    if(!found && map[i] == argv[1][0])
+      j = 0;
+    } else if(j > 0 || (nl == 1 && j == 0))
     {
-      found = 1;
-      j = i;
-    } else if(found)
-    {
-      if(argv[1][i-j+1] != 0)
+      if(argv[1][i-j+1] == 0 && map[i+1] == 10)
       {
-        if(map[i] != argv[1][i-j])
-          found = 0;
-      } else {
         printf("%i\n", nl);
-        break;
+        return(0);
+      } else if(map[i] != argv[1][i-j])
+      {
+        j = -1;
       }
+    } else if(map[i] == argv[1][0])
+    {
+      j = i;
     }
     i++;
   }
-  if(!found)
-    puts("0");
+  if(!j)
+    printf("0\n");
   munmap(map, 10000000);
   close(fp);
   return(0);
