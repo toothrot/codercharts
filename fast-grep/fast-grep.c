@@ -1,35 +1,48 @@
 #include<stdio.h>
-#include<stdlib.h>
 #include<sys/mman.h>
-#include<sys/stat.h>
-#include<fcntl.h>
-#include<string.h>
 
 int main(int argc, char *argv[])
 {
-  int size, fp, i, length, found = 0, nl = 1;
+  unsigned i = 0;
+  int fp = 0, j = 0, length = 0, found = 0, nl = 1;
   char *map, c;
-  struct stat st;
 
-  length = strlen(argv[1]);
-  stat(argv[2], &st);
-  size = st.st_size;
-  fp = open(argv[2], O_RDONLY);
+  while(argv[1][length] != 0)
+    length++;
 
-  map = mmap(NULL, size, PROT_READ, MAP_SHARED, fp, 0);
-  for(i = 0; i < size; i++)
+  fp = open(argv[2], 0);
+  map = mmap(NULL, 10000000, PROT_READ, MAP_SHARED, fp, 0);
+  while(map[i] != 0)
   {
     c = map[i];
     if(c == 10)
-      nl++;
-    found = strncmp(argv[1], map + i, length);
-    if(found == 0)
     {
-      printf("%i\n",nl);
-      break;
+      nl++;
+      i++;
+      continue;
     }
+    if(c == argv[1][0])
+    {
+      found = 1;
+      for(j = 0; j < length; j++)
+      {
+        if(map[i+j] != argv[1][j])
+        {
+          found = 0;
+          break;
+        }
+      } 
+      if(found && map[i+length] == 10)
+      {
+        printf("%i\n",nl);
+        return(0);
+      } else {
+        i+=j;
+        continue;
+      }
+    }
+    i++;
   }
-  if(!(found == 0))
-    puts("0");
-  exit(0);
+  puts("0");
+  return(0);
 }
