@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
       if(argv[1][i-j+1] == 0 && map[i+1] == 10)
       {
         printf("%i\n", nl);
-        return(0);
+        break;
       } else if(map[i] != argv[1][i-j])
       {
         j = -1;
