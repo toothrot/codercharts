@@ -1,24 +1,33 @@
-#include <stdio.h>
-#include <string.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/mman.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<string.h>
 
-FILE *fp;
-
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-  int n = 0;
-  char line[1024];
-  fp = fopen(argv[2], "rt");
+  int size, fp, i, nl = 1;
+  char *map, c;
+  char *match = 0;
+  struct stat st;
 
-  while(fgets(line, 80, fp) != NULL)
+  stat(argv[2], &st);
+  size = st.st_size;
+  fp = open(argv[2], O_RDONLY);
+
+  map = mmap(NULL, size, PROT_READ, MAP_SHARED, fp, 0);
+  match = strstr(map, argv[1]);
+  if(match)
   {
-    n++;
-    sscanf(line, "%s", line);
-    if(strcmp(line, argv[1]) == 0)
+    for(i = 0; i < match-map; i++)
     {
-      printf("%d\n", n);
-      return 0;
+      if(map[i] == 10)
+        nl++;
     }
+    printf("%i", nl);
+  } else {
+    printf("0");
   }
-  printf("0");
-  return 0;
+  exit(0);
 }
