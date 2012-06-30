@@ -3,12 +3,14 @@
 #include<unistd.h>
 #include<sys/mman.h>
 #include<stdbool.h>
+#include<string.h>
 
 int main(int argc, char *argv[])
 {
   bool found = false;
-  int  o, fp = 0, nl = 1, i = 0;
+  int  fp = 0, nl = 1, i = 0, l;
   char *map;
+  l = strlen(argv[1]);
 
   fp = open(argv[2], 0);
   map = mmap(NULL, 10000000, PROT_READ, MAP_PRIVATE, fp, 0);
@@ -19,14 +21,12 @@ int main(int argc, char *argv[])
       continue;
     } else if(map[i] == argv[1][0])
     {
-      i++;
-      for(o = 1; argv[1][o] == map[i]; o++, i++)
+      if((memcmp(argv[1], map+i, l) == 0) && map[i+l] == 10)
       {
-        if(argv[1][o+1] == 0 && map[i+1] == 10)
-        {
-          printf("%i\n", nl);
-          return(0);
-        }
+        printf("%i\n", nl);
+        return(0);
+      } else {
+        i++;
       }
     } else if(map[i] == 10)
     {
@@ -35,9 +35,6 @@ int main(int argc, char *argv[])
       found = false;
     }
   }
-  if(!found)
-    printf("0\n");
-  munmap(map, 10000000);
-  close(fp);
+  puts("0");
   return(0);
 }
