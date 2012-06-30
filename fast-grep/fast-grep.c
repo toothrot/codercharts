@@ -1,4 +1,6 @@
 #include<stdio.h>
+#include<fcntl.h>
+#include<unistd.h>
 #include<sys/mman.h>
 #include<stdbool.h>
 
@@ -12,27 +14,26 @@ int main(int argc, char *argv[])
   map = mmap(NULL, 10000000, PROT_READ, MAP_PRIVATE, fp, 0);
   while(map[i] != 0)
   {
-    if(c == argv[1][0])
+    if(map[i] != argv[1][0] && map[i] != 10){
+      i++;
+      continue;
+    } else if(map[i] == argv[1][0])
     {
-      for(o = 1; argv[1][o] != 0; o++)
+      i++;
+      for(o = 1; argv[1][o] == map[i]; o++, i++)
       {
-        if(map[i+o] != argv[1][o])
-          break;
-        if(argv[1][o+1] == 0 && map[i+o+1] == 10)
+        if(argv[1][o+1] == 0 && map[i+1] == 10)
         {
           printf("%i\n", nl);
-          found = true;
-          break;
+          return(0);
         }
       }
-      if(found)
-        break;
     } else if(map[i] == 10)
     {
+      i++;
       nl++;
       found = false;
     }
-    i++;
   }
   if(!found)
     printf("0\n");
